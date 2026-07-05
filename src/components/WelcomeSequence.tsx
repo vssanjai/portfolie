@@ -49,7 +49,7 @@ export default function WelcomeSequence({ children }: { children: React.ReactNod
   const rowHeights = 38;
   const gap = 4;
   let currentY = gap;
-  const keys = [];
+  const keys: any[] = [];
   
   keyboardLayout.forEach((rowWidths, rowIndex) => {
     let currentX = 14; // Start at 14 to perfectly center a 752px wide keyboard in a 780px container
