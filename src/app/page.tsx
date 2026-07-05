@@ -370,7 +370,7 @@ export default function Home() {
             </div>
             
             <a 
-              href="/resume.pdf" 
+              href="/portfolie/resume.pdf" 
               download="Sanjay_VS_Resume.pdf"
               className="px-6 py-3 bg-electric-blue/10 text-electric-blue border border-electric-blue hover:bg-electric-blue hover:text-black font-bold uppercase tracking-widest transition-all flex justify-center items-center gap-2 rounded group shadow-[0_0_15px_rgba(0,122,255,0.2)]"
             >
@@ -402,7 +402,7 @@ export default function Home() {
             
             <div className="w-full h-[calc(100%-3rem)] bg-white/5 relative z-0">
               <iframe 
-                src="/resume.pdf" 
+                src="/portfolie/resume.pdf" 
                 className="w-full h-full border-none"
                 title="Resume PDF Viewer"
               />
