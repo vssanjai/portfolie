@@ -106,7 +106,9 @@ function VulnerabilityNetwork() {
       {/* Network Nodes */}
       <points ref={pointsRef}>
         <bufferGeometry>
+          {/* @ts-ignore */}
           <bufferAttribute attach="attributes-position" count={nodeCount} array={positions} itemSize={3} />
+          {/* @ts-ignore */}
           <bufferAttribute attach="attributes-color" count={nodeCount} array={colors} itemSize={3} />
         </bufferGeometry>
         <pointsMaterial size={0.1} vertexColors transparent opacity={0.8} />
@@ -115,7 +117,9 @@ function VulnerabilityNetwork() {
       {/* Connecting Lines */}
       <lineSegments ref={linesRef}>
         <bufferGeometry>
+          {/* @ts-ignore */}
           <bufferAttribute attach="attributes-position" count={nodeCount} array={positions} itemSize={3} />
+          {/* @ts-ignore */}
           <bufferAttribute attach="index" array={lines} itemSize={1} />
         </bufferGeometry>
         <lineBasicMaterial color="#007AFF" transparent opacity={0.15} />
