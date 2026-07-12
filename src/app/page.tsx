@@ -12,7 +12,6 @@ import TerminalExperience from "@/components/TerminalExperience";
 import ServerRackMockup from "@/components/ServerRackMockup";
 import OperationsLog from "@/components/OperationsLog";
 import ThreatLogs from "@/components/ThreatLogs";
-import { ThemeToggle } from '@/components/ThemeToggle';
 import CyberAvatar from '@/components/CyberAvatar';
 import DroneMockup from "@/components/DroneMockup";
 import CyberRadarMockup from "@/components/CyberRadarMockup";
