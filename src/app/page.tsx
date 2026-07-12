@@ -12,6 +12,8 @@ import TerminalExperience from "@/components/TerminalExperience";
 import ServerRackMockup from "@/components/ServerRackMockup";
 import OperationsLog from "@/components/OperationsLog";
 import ThreatLogs from "@/components/ThreatLogs";
+import { ThemeToggle } from '@/components/ThemeToggle';
+import CyberAvatar from '@/components/CyberAvatar';
 import DroneMockup from "@/components/DroneMockup";
 import CyberRadarMockup from "@/components/CyberRadarMockup";
 import CyberLockMockup from "@/components/CyberLockMockup";
@@ -105,7 +107,11 @@ export default function Home() {
               <Typewriter delay={0.5} text="A highly motivated Fresher & Cybersecurity Enthusiast. Eager to secure systems, find vulnerabilities, and build robust web applications." />
             </motion.p>
 
-            <motion.div variants={itemVariants} className="flex flex-wrap gap-4 mt-4">
+            <motion.div variants={itemVariants} className="mt-4">
+              <CyberAvatar />
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="flex flex-wrap gap-4 mt-8">
               <motion.a 
                 whileHover={{ scale: 1.05, y: -5 }}
                 whileTap={{ scale: 0.95 }}
