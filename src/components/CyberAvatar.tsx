@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Terminal, Volume2, VolumeX } from 'lucide-react';
 
@@ -8,10 +8,6 @@ export default function CyberAvatar() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [currentLang, setCurrentLang] = useState<'eng' | 'tam' | null>(null);
   
-  // For CC Sync
-  const [spokenWords, setSpokenWords] = useState<string>("");
-  const [fullText, setFullText] = useState<string>("");
-
   const texts = {
     eng: "Hello! I am Sanjay V S, a highly motivated fresher and cybersecurity enthusiast. I specialize in breaking systems before hackers do. To see more details about my skills and projects, please scroll down.",
     tam: "வணக்கம்! நான் சஞ்சய் V S, ஒரு சைபர் செக்யூரிட்டி என்டூசியாஸ்ட். ஹேக்கர்களுக்கு முன்னால் சிஸ்டம்ஸை பிரேக் செய்வதுதான் என் ஸ்பெஷாலிட்டி. என் ஸ்கில்ஸ் மற்றும் ப்ராஜெக்ட்ஸ் பற்றி தெரிந்துகொள்ள, கீழே ஸ்க்ரோல் பண்ணுங்கள்."
@@ -26,9 +22,6 @@ export default function CyberAvatar() {
         setCurrentLang(null);
         return;
       }
-
-      setFullText(texts[lang]);
-      setSpokenWords(""); // Reset CC
 
       const utterance = new SpeechSynthesisUtterance(texts[lang]);
       
@@ -46,16 +39,8 @@ export default function CyberAvatar() {
         setCurrentLang(lang);
       };
       
-      // SYNC TEXT ON WORD BOUNDARY
-      utterance.onboundary = (event) => {
-        if (event.name === 'word') {
-          setSpokenWords(texts[lang].substring(0, event.charIndex + event.charLength));
-        }
-      };
-      
       utterance.onend = () => {
         setIsSpeaking(false);
-        setSpokenWords(texts[lang]); // Ensure full text shows at end
       };
 
       utterance.onerror = () => {
@@ -67,17 +52,15 @@ export default function CyberAvatar() {
   };
 
   useEffect(() => {
-    // Attempt Auto-Play on Load (English first, then Tamil)
+    // Attempt Auto-Play on Load
     const initSpeech = setTimeout(() => {
       if (window.speechSynthesis && !isSpeaking && !currentLang) {
         speak('eng');
-        
-        // Queue Tamil after approx 8 seconds (if English finishes)
         setTimeout(() => {
           if (window.speechSynthesis) {
             speak('tam');
           }
-        }, 8000);
+        }, 9000);
       }
     }, 1500);
 
@@ -89,38 +72,16 @@ export default function CyberAvatar() {
     };
   }, []);
 
-  // Fallback for browsers where onboundary is broken or delayed
-  useEffect(() => {
-    if (isSpeaking && currentLang) {
-      const text = texts[currentLang];
-      const duration = currentLang === 'eng' ? 8000 : 8000;
-      const intervalTime = duration / text.length;
-      
-      let index = 0;
-      // Only use fallback if onboundary hasn't updated spokenWords
-      const interval = setInterval(() => {
-        setSpokenWords((prev) => {
-          if (prev.length < text.length) {
-            // Only advance if onboundary isn't taking care of it
-            if (prev.length <= index) {
-               return text.substring(0, index + 1);
-            }
-            return prev;
-          }
-          return prev;
-        });
-        index += 2;
-      }, intervalTime * 2);
-      
-      return () => clearInterval(interval);
-    }
-  }, [isSpeaking, currentLang]);
+  // Calculate animation duration based on standard speaking rate (approx 130 words per minute)
+  const getDuration = (text: string) => {
+    const wordCount = text.split(' ').length;
+    return (wordCount / 130) * 60; // Duration in seconds
+  };
 
   return (
     <div className="flex flex-col md:flex-row items-center md:items-start gap-6 z-20 w-full mt-4">
       
       <div className="flex flex-col items-center gap-4 shrink-0">
-        {/* Hologram Avatar Container */}
         <motion.button 
           className="relative w-32 h-32 md:w-40 md:h-40 rounded-full p-1 cursor-pointer outline-none group"
           onClick={() => {
@@ -145,7 +106,6 @@ export default function CyberAvatar() {
           }}
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         >
-          {/* Animated Border Spin */}
           <motion.div 
             className="absolute inset-0 rounded-full border border-cyan-500/30"
             animate={{ rotate: 360 }}
@@ -157,7 +117,6 @@ export default function CyberAvatar() {
             transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
           />
           
-          {/* Hologram SVG Filter */}
           <svg className="hidden">
             <defs>
               <filter id="glitch-filter">
@@ -168,7 +127,6 @@ export default function CyberAvatar() {
             </defs>
           </svg>
 
-          {/* Profile Image */}
           <div className="relative w-full h-full rounded-full overflow-hidden bg-space-black flex items-center justify-center border-2 border-cyan-500/30">
             <div 
               className="absolute inset-0 bg-cover bg-[center_top_1rem] md:bg-top bg-no-repeat z-10 transition-all duration-300 scale-110" 
@@ -181,7 +139,6 @@ export default function CyberAvatar() {
             />
             <div className="absolute inset-0 bg-cyan-500/10 mix-blend-overlay z-20 pointer-events-none" />
             
-            {/* Dot Matrix Pattern Overlay */}
             <div 
               className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-60 z-30 group-hover:opacity-100 transition-opacity"
               style={{
@@ -192,7 +149,6 @@ export default function CyberAvatar() {
           </div>
         </motion.button>
 
-        {/* Language Selection Buttons */}
         <div className="flex gap-2">
           <button
             onClick={() => speak('eng')}
@@ -220,17 +176,15 @@ export default function CyberAvatar() {
         </div>
       </div>
 
-      {/* Cyberpunk Closed Captions (CC) Terminal */}
       <AnimatePresence mode="wait">
         {currentLang && (
           <motion.div 
-            key={currentLang} // Forces re-animation when language changes
+            key={currentLang} 
             initial={{ opacity: 0, x: -20, height: 0 }}
             animate={{ opacity: 1, x: 0, height: "auto" }}
             exit={{ opacity: 0, scale: 0.9 }}
             className="flex flex-col bg-space-black/80 border border-cyan-500/30 p-4 rounded-lg backdrop-blur-md shadow-[0_0_20px_rgba(0,255,255,0.15)] relative overflow-hidden w-full max-w-sm mt-4 md:mt-0"
           >
-            {/* Terminal Top Bar */}
             <div className="flex items-center justify-between mb-3 border-b border-cyan-500/30 pb-2">
               <div className="flex items-center gap-2 text-cyan-400 font-mono text-[10px] uppercase tracking-widest">
                 <Terminal size={12} />
@@ -242,13 +196,24 @@ export default function CyberAvatar() {
               </div>
             </div>
 
-            {/* CC Text with Sync */}
             <div className="text-cyan-50 font-mono text-xs sm:text-sm leading-relaxed min-h-[80px]">
-              {spokenWords}
+              {texts[currentLang].split(" ").map((word, i) => (
+                <motion.span
+                  key={i}
+                  initial={{ opacity: 0.2, filter: "blur(4px)" }}
+                  animate={{ opacity: 1, filter: "blur(0px)" }}
+                  transition={{ 
+                    duration: 0.2, 
+                    delay: (i / texts[currentLang].split(" ").length) * getDuration(texts[currentLang]) 
+                  }}
+                  className="inline-block mr-1"
+                >
+                  {word}
+                </motion.span>
+              ))}
               {isSpeaking && <span className="inline-block w-2 h-3 bg-cyan-400 animate-pulse ml-1 align-middle" />}
             </div>
             
-            {/* Scanlines over CC */}
             <div 
               className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-20"
               style={{
@@ -259,7 +224,6 @@ export default function CyberAvatar() {
           </motion.div>
         )}
       </AnimatePresence>
-
     </div>
   );
 }
