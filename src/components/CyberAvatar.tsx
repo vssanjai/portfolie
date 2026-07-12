@@ -7,43 +7,59 @@ import { Terminal, Volume2, VolumeX } from 'lucide-react';
 export default function CyberAvatar() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [currentLang, setCurrentLang] = useState<'eng' | 'tam' | null>(null);
+  const [autoQueue, setAutoQueue] = useState<'tam' | null>(null);
   
   const texts = {
     eng: "Hello! I am Sanjay V S, a highly motivated fresher and cybersecurity enthusiast. I specialize in breaking systems before hackers do. To see more details about my skills and projects, please scroll down.",
     tam: "வணக்கம்! நான் சஞ்சய் V S, ஒரு சைபர் செக்யூரிட்டி என்டூசியாஸ்ட். ஹேக்கர்களுக்கு முன்னால் சிஸ்டம்ஸை பிரேக் செய்வதுதான் என் ஸ்பெஷாலிட்டி. என் ஸ்கில்ஸ் மற்றும் ப்ராஜெக்ட்ஸ் பற்றி தெரிந்துகொள்ள, கீழே ஸ்க்ரோல் பண்ணுங்கள்."
   };
 
-  const speak = (lang: 'eng' | 'tam') => {
+  const speak = (lang: 'eng' | 'tam', queueNext?: 'tam') => {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel(); 
 
-      if (isSpeaking && currentLang === lang) {
+      if (isSpeaking && currentLang === lang && !queueNext) {
         setIsSpeaking(false);
         setCurrentLang(null);
+        setAutoQueue(null);
         return;
       }
 
       const utterance = new SpeechSynthesisUtterance(texts[lang]);
       
       const voices = window.speechSynthesis.getVoices();
+      
       if (lang === 'eng') {
-        const engVoice = voices.find(v => v.lang.includes('en-US') || v.lang.includes('en-GB') || v.lang.includes('en-IN'));
+        // Try to find Indian English Male (Ravi, or any en-IN that is not explicitly female)
+        const engVoice = voices.find(v => v.lang.includes('en-IN') && (v.name.includes('Ravi') || v.name.includes('Male'))) 
+                      || voices.find(v => v.lang.includes('en-IN'))
+                      || voices.find(v => v.lang.includes('en-US') && v.name.includes('Male'))
+                      || voices.find(v => v.lang.includes('en'));
         if (engVoice) utterance.voice = engVoice;
       } else {
-        const tamVoice = voices.find(v => v.lang.includes('ta-IN') || v.lang.includes('ta'));
+        // Try to find Tamil India Male (Valluvar)
+        const tamVoice = voices.find(v => v.lang.includes('ta-IN') && (v.name.includes('Valluvar') || v.name.includes('Male')))
+                      || voices.find(v => v.lang.includes('ta-IN') || v.lang.includes('ta'));
         if (tamVoice) utterance.voice = tamVoice;
       }
 
       utterance.onstart = () => {
         setIsSpeaking(true);
         setCurrentLang(lang);
+        if (queueNext) setAutoQueue(queueNext);
       };
       
       utterance.onend = () => {
         setIsSpeaking(false);
+        // Automatically play Tamil after English finishes if queued
+        if (lang === 'eng' && queueNext === 'tam') {
+          setTimeout(() => speak('tam'), 1000); // Small 1 sec pause between languages
+          setAutoQueue(null);
+        }
       };
 
-      utterance.onerror = () => {
+      utterance.onerror = (e) => {
+        console.error("SpeechSynthesis error:", e);
         setIsSpeaking(false);
       };
 
@@ -52,15 +68,10 @@ export default function CyberAvatar() {
   };
 
   useEffect(() => {
-    // Attempt Auto-Play on Load
+    // Attempt Auto-Play on Load (English -> Tamil sequence)
     const initSpeech = setTimeout(() => {
       if (window.speechSynthesis && !isSpeaking && !currentLang) {
-        speak('eng');
-        setTimeout(() => {
-          if (window.speechSynthesis) {
-            speak('tam');
-          }
-        }, 9000);
+        speak('eng', 'tam');
       }
     }, 1500);
 
@@ -72,7 +83,7 @@ export default function CyberAvatar() {
     };
   }, []);
 
-  // Calculate animation duration based on standard speaking rate (approx 130 words per minute)
+  // Calculate animation duration based on standard speaking rate
   const getDuration = (text: string) => {
     const wordCount = text.split(' ').length;
     return (wordCount / 130) * 60; // Duration in seconds
@@ -89,8 +100,9 @@ export default function CyberAvatar() {
               window.speechSynthesis.cancel();
               setIsSpeaking(false);
               setCurrentLang(null);
+              setAutoQueue(null);
             } else {
-              speak('eng');
+              speak('eng', 'tam');
             }
           }}
           whileHover={{ scale: 1.05 }}
@@ -206,9 +218,9 @@ export default function CyberAvatar() {
                     duration: 0.2, 
                     delay: (i / texts[currentLang].split(" ").length) * getDuration(texts[currentLang]) 
                   }}
-                  className="inline-block mr-1"
+                  className="inline-block"
                 >
-                  {word}
+                  {word}&nbsp;
                 </motion.span>
               ))}
               {isSpeaking && <span className="inline-block w-2 h-3 bg-cyan-400 animate-pulse ml-1 align-middle" />}
