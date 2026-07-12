@@ -191,37 +191,36 @@ export default function CyberAvatar() {
             style={{ transform: "translateZ(10px)" }}
           />
           
-          <svg className="hidden">
-            <defs>
-              <filter id="glitch-filter">
-                <feTurbulence type="fractalNoise" baseFrequency="0.05 0.95" numOctaves="1" result="noise" />
-                <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 3 -1" in="noise" result="coloredNoise" />
-                <feDisplacementMap in="SourceGraphic" in2="coloredNoise" scale="10" xChannelSelector="R" yChannelSelector="G" />
-              </filter>
-            </defs>
-          </svg>
-
           <div 
             className="relative w-full h-full rounded-full overflow-hidden bg-space-black flex items-center justify-center border-2 border-cyan-500/30"
             style={{ transform: "translateZ(30px)" }}
           >
+            {/* Clear Profile Image without harsh distortion */}
             <div 
               className="absolute inset-0 bg-cover bg-[center_top_1rem] md:bg-top bg-no-repeat z-10 transition-all duration-300 scale-110" 
               style={{
                 backgroundImage: "url('/avatar.jpg?t=3')",
-                filter: isSpeaking 
-                  ? "grayscale(0.3) sepia(0.8) hue-rotate(180deg) saturate(2) brightness(1.2) contrast(1.1) url(#glitch-filter)" 
-                  : "grayscale(0.3) sepia(0.8) hue-rotate(180deg) saturate(2) brightness(1.2) contrast(1.1)"
+                filter: isSpeaking ? "brightness(1.1) contrast(1.1)" : "brightness(1.0) contrast(1.0)"
               }}
             />
-            <div className="absolute inset-0 bg-cyan-500/10 mix-blend-overlay z-20 pointer-events-none" />
             
+            {/* Subtle Cyan Hologram Tint */}
+            <div className={`absolute inset-0 bg-cyan-500/20 mix-blend-overlay z-20 pointer-events-none transition-opacity duration-300 ${isSpeaking ? 'opacity-60' : 'opacity-20'}`} />
+            
+            {/* Sci-Fi Dot Grid Pattern */}
             <div 
-              className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-60 z-30 group-hover:opacity-100 transition-opacity"
+              className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-30 z-30 group-hover:opacity-50 transition-opacity duration-300"
               style={{
-                backgroundImage: "radial-gradient(circle, rgba(0,255,255,0.4) 1px, transparent 1px)",
+                backgroundImage: "radial-gradient(circle, rgba(0,255,255,0.8) 1px, transparent 1px)",
                 backgroundSize: "4px 4px"
               }}
+            />
+
+            {/* High-Tech Scanning Laser Animation */}
+            <motion.div 
+              className="absolute left-0 right-0 h-[2px] bg-cyan-300/80 shadow-[0_0_15px_rgba(0,255,255,1)] z-40"
+              animate={{ top: ["-10%", "110%", "-10%"] }}
+              transition={{ duration: isSpeaking ? 1.5 : 4, repeat: Infinity, ease: "linear" }}
             />
           </div>
         </motion.button>
