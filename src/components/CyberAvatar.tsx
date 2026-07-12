@@ -1,99 +1,74 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Volume2, VolumeX, Terminal } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Terminal } from 'lucide-react';
+import Typewriter from './Typewriter';
 
 export default function CyberAvatar() {
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [currentLang, setCurrentLang] = useState<string | null>(null);
-
-  const texts = {
-    eng: "Hello! I am Sanjay V S, a highly motivated fresher and cybersecurity enthusiast. I specialize in breaking systems before hackers do. To see more details about my skills and projects, please scroll down.",
-    tam: "வணக்கம்! நான் சஞ்சய் V S, ஒரு சைபர் செக்யூரிட்டி என்டூசியாஸ்ட். ஹேக்கர்களுக்கு முன்னால் சிஸ்டம்ஸை பிரேக் செய்வதுதான் என் ஸ்பெஷாலிட்டி. என் ஸ்கில்ஸ் மற்றும் ப்ராஜெக்ட்ஸ் பற்றி தெரிந்துகொள்ள, கீழே ஸ்க்ரோல் பண்ணுங்கள்."
-  };
-
-  const speak = (lang: 'eng' | 'tam') => {
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-      window.speechSynthesis.cancel(); 
-
-      if (isSpeaking && currentLang === lang) {
-        setIsSpeaking(false);
-        setCurrentLang(null);
-        return;
-      }
-
-      const utterance = new SpeechSynthesisUtterance(texts[lang]);
-      
-      const voices = window.speechSynthesis.getVoices();
-      if (lang === 'eng') {
-        const engVoice = voices.find(v => v.lang.includes('en-US') || v.lang.includes('en-GB') || v.lang.includes('en-IN'));
-        if (engVoice) utterance.voice = engVoice;
-      } else {
-        const tamVoice = voices.find(v => v.lang.includes('ta-IN') || v.lang.includes('ta'));
-        if (tamVoice) utterance.voice = tamVoice;
-      }
-
-      utterance.onstart = () => {
-        setIsSpeaking(true);
-        setCurrentLang(lang);
-      };
-      
-      utterance.onend = () => {
-        setIsSpeaking(false);
-        setCurrentLang(null);
-      };
-
-      utterance.onerror = () => {
-        setIsSpeaking(false);
-        setCurrentLang(null);
-      };
-
-      window.speechSynthesis.speak(utterance);
-    }
-  };
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [showCC, setShowCC] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    // Attempt auto-play on load
+    // Initialize audio
+    audioRef.current = new Audio('/intro.ogg');
+    
+    audioRef.current.onplay = () => {
+      setIsPlaying(true);
+      setShowCC(true);
+    };
+    
+    audioRef.current.onended = () => {
+      setIsPlaying(false);
+      // Optional: hide CC after finish, or keep it visible
+      // setShowCC(false); 
+    };
+
+    audioRef.current.onerror = () => {
+      setIsPlaying(false);
+    };
+
+    // Attempt autoplay
     const timer = setTimeout(() => {
-      if (window.speechSynthesis) {
-        speak('eng');
-        // Queue Tamil after English finishes
-        setTimeout(() => {
-          if (window.speechSynthesis) {
-            speak('tam');
-          }
-        }, 8000);
+      if (audioRef.current) {
+        audioRef.current.play().catch(e => {
+          console.log("Autoplay blocked. User needs to click.");
+        });
       }
     }, 1500);
     
     return () => {
       clearTimeout(timer);
-      if (typeof window !== 'undefined' && window.speechSynthesis) {
-        window.speechSynthesis.cancel();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
       }
     };
   }, []);
 
+  const handleInteract = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(e => console.error(e));
+      }
+    }
+  };
+
   return (
-    <div className="flex flex-col gap-4 z-20 max-w-sm mt-4">
+    <div className="flex flex-col md:flex-row items-center gap-6 z-20 w-full mt-4">
+      
       {/* Hologram Avatar Container */}
       <motion.button 
-        className="relative w-32 h-32 md:w-40 md:h-40 rounded-full p-1 cursor-pointer outline-none group"
-        onClick={() => {
-          if (!isSpeaking) {
-            speak('eng');
-            // Queue Tamil after English finishes
-            setTimeout(() => {
-              if (window.speechSynthesis) {
-                speak('tam');
-              }
-            }, 8000);
-          }
-        }}
+        className="relative w-32 h-32 md:w-40 md:h-40 rounded-full p-1 cursor-pointer outline-none group shrink-0"
+        onClick={handleInteract}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        animate={isSpeaking ? {
+        animate={isPlaying ? {
           boxShadow: [
             "0 0 10px rgba(0, 255, 255, 0.5)",
             "0 0 30px rgba(0, 255, 255, 0.8)",
@@ -116,7 +91,7 @@ export default function CyberAvatar() {
           transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
         />
         
-        {/* Hologram SVG Filter Definition for Glitch */}
+        {/* Hologram SVG Filter */}
         <svg className="hidden">
           <defs>
             <filter id="glitch-filter">
@@ -129,12 +104,11 @@ export default function CyberAvatar() {
 
         {/* Profile Image */}
         <div className="relative w-full h-full rounded-full overflow-hidden bg-space-black flex items-center justify-center border-2 border-cyan-500/30">
-          {/* We append a timestamp to avatar.jpg to break browser cache just in case */}
           <div 
             className="absolute inset-0 bg-cover bg-[center_top_1rem] md:bg-top bg-no-repeat z-10 transition-all duration-300 scale-110" 
             style={{
               backgroundImage: "url('/avatar.jpg?t=2')",
-              filter: isSpeaking 
+              filter: isPlaying 
                 ? "grayscale(0.3) sepia(0.8) hue-rotate(180deg) saturate(2) brightness(1.2) contrast(1.1) url(#glitch-filter)" 
                 : "grayscale(0.3) sepia(0.8) hue-rotate(180deg) saturate(2) brightness(1.2) contrast(1.1)"
             }}
@@ -151,6 +125,48 @@ export default function CyberAvatar() {
           />
         </div>
       </motion.button>
+
+      {/* Cyberpunk Closed Captions (CC) Terminal */}
+      <AnimatePresence>
+        {showCC && (
+          <motion.div 
+            initial={{ opacity: 0, x: -20, width: 0 }}
+            animate={{ opacity: 1, x: 0, width: "auto" }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="flex flex-col bg-space-black/80 border border-cyan-500/30 p-4 rounded-lg backdrop-blur-md shadow-[0_0_20px_rgba(0,255,255,0.15)] relative overflow-hidden max-w-sm"
+          >
+            {/* Terminal Top Bar */}
+            <div className="flex items-center justify-between mb-3 border-b border-cyan-500/30 pb-2">
+              <div className="flex items-center gap-2 text-cyan-400 font-mono text-[10px] uppercase tracking-widest">
+                <Terminal size={12} />
+                <span>AUDIO_TRANSMISSION.sh</span>
+              </div>
+              <div className="flex gap-1">
+                <span className="w-2 h-2 rounded-full bg-cyan-500/50 animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-cyan-500/30" />
+              </div>
+            </div>
+
+            {/* Terminal Body with Typewriter */}
+            <div className="text-cyan-50 font-mono text-xs sm:text-sm leading-relaxed">
+              <Typewriter 
+                delay={0.1} 
+                text="Hello! I am Sanjay V S, a highly motivated fresher and cybersecurity enthusiast. I specialize in breaking systems before hackers do. To see more details about my skills and projects, please scroll down." 
+              />
+            </div>
+            
+            {/* Scanlines over CC */}
+            <div 
+              className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-20"
+              style={{
+                background: "linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0.8))",
+                backgroundSize: "100% 4px"
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }
