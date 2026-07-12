@@ -81,11 +81,12 @@ export default function CyberAvatar() {
   };
 
   useEffect(() => {
+    // Attempt Auto-Play on Load (English -> Tamil sequence) after a short delay
     const initSpeech = setTimeout(() => {
       if (window.speechSynthesis && !isSpeaking && !currentLang) {
         speak('eng', 'tam');
       }
-    }, 6000);
+    }, 3500);
 
     return () => {
       clearTimeout(initSpeech);
