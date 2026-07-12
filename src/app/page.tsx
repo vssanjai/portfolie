@@ -107,11 +107,11 @@ export default function Home() {
               <Typewriter delay={0.5} text="A highly motivated Fresher & Cybersecurity Enthusiast. Eager to secure systems, find vulnerabilities, and build robust web applications." />
             </motion.p>
 
-            <motion.div variants={itemVariants} className="mt-4">
+            <motion.div variants={itemVariants} className="mt-6 mb-2">
               <CyberAvatar />
             </motion.div>
 
-            <motion.div variants={itemVariants} className="flex flex-wrap gap-4 mt-8">
+            <motion.div variants={itemVariants} className="flex flex-wrap gap-4 mt-6">
               <motion.a 
                 whileHover={{ scale: 1.05, y: -5 }}
                 whileTap={{ scale: 0.95 }}

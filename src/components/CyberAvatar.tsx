@@ -15,7 +15,7 @@ export default function CyberAvatar() {
 
   const speak = (lang: 'eng' | 'tam') => {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
-      window.speechSynthesis.cancel(); // Stop any ongoing speech
+      window.speechSynthesis.cancel(); 
 
       if (isSpeaking && currentLang === lang) {
         setIsSpeaking(false);
@@ -25,7 +25,6 @@ export default function CyberAvatar() {
 
       const utterance = new SpeechSynthesisUtterance(texts[lang]);
       
-      // Try to find an appropriate voice
       const voices = window.speechSynthesis.getVoices();
       if (lang === 'eng') {
         const engVoice = voices.find(v => v.lang.includes('en-US') || v.lang.includes('en-GB') || v.lang.includes('en-IN'));
@@ -55,7 +54,6 @@ export default function CyberAvatar() {
   };
 
   useEffect(() => {
-    // Cleanup on unmount
     return () => {
       if (typeof window !== 'undefined' && window.speechSynthesis) {
         window.speechSynthesis.cancel();
@@ -64,24 +62,24 @@ export default function CyberAvatar() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center gap-6 z-20">
-      {/* Holographic Avatar Container */}
+    <div className="flex flex-col gap-4 z-20 max-w-sm mt-4">
+      {/* Hologram Avatar Container */}
       <motion.div 
-        className="relative w-48 h-48 md:w-56 md:h-56 rounded-full p-1"
+        className="relative w-32 h-32 md:w-40 md:h-40 rounded-full p-1"
         animate={isSpeaking ? {
           boxShadow: [
-            "0 0 10px rgba(0, 122, 255, 0.5)",
-            "0 0 40px rgba(0, 255, 255, 0.8)",
-            "0 0 10px rgba(0, 122, 255, 0.5)"
+            "0 0 10px rgba(0, 255, 255, 0.5)",
+            "0 0 30px rgba(0, 255, 255, 0.8)",
+            "0 0 10px rgba(0, 255, 255, 0.5)"
           ],
         } : {
-          boxShadow: "0 0 15px rgba(0, 122, 255, 0.2)"
+          boxShadow: "0 0 15px rgba(0, 255, 255, 0.2)"
         }}
         transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
       >
         {/* Animated Border Spin */}
         <motion.div 
-          className="absolute inset-0 rounded-full border border-electric-blue/30"
+          className="absolute inset-0 rounded-full border border-cyan-500/30"
           animate={{ rotate: 360 }}
           transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
         />
@@ -91,52 +89,71 @@ export default function CyberAvatar() {
           transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
         />
         
+        {/* Hologram SVG Filter Definition for Glitch */}
+        <svg className="hidden">
+          <defs>
+            <filter id="glitch-filter">
+              <feTurbulence type="fractalNoise" baseFrequency="0.05 0.95" numOctaves="1" result="noise" />
+              <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 3 -1" in="noise" result="coloredNoise" />
+              <feDisplacementMap in="SourceGraphic" in2="coloredNoise" scale="10" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+          </defs>
+        </svg>
+
         {/* Profile Image */}
-        <div className="relative w-full h-full rounded-full overflow-hidden bg-space-black flex items-center justify-center border-2 border-space-black">
-          {/* Fallback avatar icon if no image provided */}
-          <div className="absolute inset-0 bg-[url('/avatar.jpg')] bg-cover bg-center bg-no-repeat z-10" />
-          <div className="absolute inset-0 bg-electric-blue/10 mix-blend-overlay z-20" />
+        <div className="relative w-full h-full rounded-full overflow-hidden bg-space-black flex items-center justify-center border-2 border-cyan-500/30">
+          <div 
+            className="absolute inset-0 bg-[url('/avatar.jpg')] bg-cover bg-center bg-no-repeat z-10" 
+            style={{
+              filter: isSpeaking 
+                ? "grayscale(0.5) sepia(1) hue-rotate(180deg) saturate(3) brightness(0.8) contrast(1.2) url(#glitch-filter)" 
+                : "grayscale(0.5) sepia(1) hue-rotate(180deg) saturate(3) brightness(0.8) contrast(1.2)",
+              mixBlendMode: "screen"
+            }}
+          />
+          <div className="absolute inset-0 bg-cyan-500/10 mix-blend-overlay z-20" />
           
-          {/* Glitch Overlay while speaking */}
-          {isSpeaking && (
-            <motion.div 
-              className="absolute inset-0 bg-cyan-400/20 mix-blend-color-burn z-30"
-              animate={{ opacity: [0, 0.5, 0, 0.8, 0] }}
-              transition={{ duration: 0.2, repeat: Infinity, repeatType: "mirror" }}
-            />
-          )}
+          {/* Dot Matrix Pattern Overlay */}
+          <div 
+            className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-60 z-30"
+            style={{
+              backgroundImage: "radial-gradient(circle, rgba(0,255,255,0.4) 1px, transparent 1px)",
+              backgroundSize: "4px 4px"
+            }}
+          />
         </div>
       </motion.div>
 
       {/* Communications Interface */}
-      <div className="flex flex-col items-center gap-3 bg-space-black/50 p-4 rounded-xl border border-white/5 backdrop-blur-sm">
-        <div className="flex items-center gap-2 text-xs text-electric-blue font-mono mb-1">
-          <Terminal size={12} />
+      <div className="flex flex-col gap-2 bg-space-black/50 p-3 rounded-lg border border-cyan-500/20 backdrop-blur-sm w-fit">
+        <div className="flex items-center gap-2 text-[10px] text-cyan-400 font-mono mb-1">
+          <Terminal size={10} />
           <span>INIT_COMMS_PROTOCOL</span>
+          <span className="animate-pulse">{isSpeaking ? '>> TRANSMITTING' : ''}</span>
         </div>
         
-        <div className="flex gap-4">
+        <div className="flex gap-2">
           <button
             onClick={() => speak('eng')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-mono text-sm uppercase tracking-wider transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-mono text-xs uppercase tracking-wider transition-all ${
               currentLang === 'eng' 
-                ? 'bg-electric-blue text-black shadow-[0_0_15px_rgba(0,122,255,0.6)]' 
-                : 'bg-white/5 text-gray-300 hover:bg-electric-blue/20 hover:text-white border border-white/10'
+                ? 'bg-cyan-500 text-black shadow-[0_0_15px_rgba(0,255,255,0.5)]' 
+                : 'bg-white/5 text-gray-300 hover:bg-cyan-500/20 hover:text-cyan-400 border border-white/10'
             }`}
           >
-            {currentLang === 'eng' ? <Volume2 size={16} /> : <VolumeX size={16} />}
-            English
+            {currentLang === 'eng' ? <Volume2 size={12} /> : <VolumeX size={12} />}
+            Eng
           </button>
           
           <button
             onClick={() => speak('tam')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-mono text-sm uppercase tracking-wider transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-mono text-xs uppercase tracking-wider transition-all ${
               currentLang === 'tam' 
-                ? 'bg-electric-blue text-black shadow-[0_0_15px_rgba(0,122,255,0.6)]' 
-                : 'bg-white/5 text-gray-300 hover:bg-electric-blue/20 hover:text-white border border-white/10'
+                ? 'bg-cyan-500 text-black shadow-[0_0_15px_rgba(0,255,255,0.5)]' 
+                : 'bg-white/5 text-gray-300 hover:bg-cyan-500/20 hover:text-cyan-400 border border-white/10'
             }`}
           >
-            {currentLang === 'tam' ? <Volume2 size={16} /> : <VolumeX size={16} />}
+            {currentLang === 'tam' ? <Volume2 size={12} /> : <VolumeX size={12} />}
             தமிழ்
           </button>
         </div>
