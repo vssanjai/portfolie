@@ -54,7 +54,21 @@ export default function CyberAvatar() {
   };
 
   useEffect(() => {
+    // Attempt auto-play on load
+    const timer = setTimeout(() => {
+      if (window.speechSynthesis) {
+        speak('eng');
+        // Queue Tamil after English finishes
+        setTimeout(() => {
+          if (window.speechSynthesis) {
+            speak('tam');
+          }
+        }, 8000);
+      }
+    }, 1500);
+    
     return () => {
+      clearTimeout(timer);
       if (typeof window !== 'undefined' && window.speechSynthesis) {
         window.speechSynthesis.cancel();
       }
@@ -64,8 +78,21 @@ export default function CyberAvatar() {
   return (
     <div className="flex flex-col gap-4 z-20 max-w-sm mt-4">
       {/* Hologram Avatar Container */}
-      <motion.div 
-        className="relative w-32 h-32 md:w-40 md:h-40 rounded-full p-1"
+      <motion.button 
+        className="relative w-32 h-32 md:w-40 md:h-40 rounded-full p-1 cursor-pointer outline-none group"
+        onClick={() => {
+          if (!isSpeaking) {
+            speak('eng');
+            // Queue Tamil after English finishes
+            setTimeout(() => {
+              if (window.speechSynthesis) {
+                speak('tam');
+              }
+            }, 8000);
+          }
+        }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
         animate={isSpeaking ? {
           boxShadow: [
             "0 0 10px rgba(0, 255, 255, 0.5)",
@@ -102,62 +129,28 @@ export default function CyberAvatar() {
 
         {/* Profile Image */}
         <div className="relative w-full h-full rounded-full overflow-hidden bg-space-black flex items-center justify-center border-2 border-cyan-500/30">
+          {/* We append a timestamp to avatar.jpg to break browser cache just in case */}
           <div 
-            className="absolute inset-0 bg-[url('/avatar.jpg')] bg-cover bg-center bg-no-repeat z-10" 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat z-10 transition-all duration-300" 
             style={{
+              backgroundImage: "url('/avatar.jpg?t=1')",
               filter: isSpeaking 
-                ? "grayscale(0.5) sepia(1) hue-rotate(180deg) saturate(3) brightness(0.8) contrast(1.2) url(#glitch-filter)" 
-                : "grayscale(0.5) sepia(1) hue-rotate(180deg) saturate(3) brightness(0.8) contrast(1.2)",
-              mixBlendMode: "screen"
+                ? "grayscale(0.3) sepia(0.8) hue-rotate(180deg) saturate(2) brightness(1.2) contrast(1.1) url(#glitch-filter)" 
+                : "grayscale(0.3) sepia(0.8) hue-rotate(180deg) saturate(2) brightness(1.2) contrast(1.1)"
             }}
           />
-          <div className="absolute inset-0 bg-cyan-500/10 mix-blend-overlay z-20" />
+          <div className="absolute inset-0 bg-cyan-500/10 mix-blend-overlay z-20 pointer-events-none" />
           
           {/* Dot Matrix Pattern Overlay */}
           <div 
-            className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-60 z-30"
+            className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-60 z-30 group-hover:opacity-100 transition-opacity"
             style={{
               backgroundImage: "radial-gradient(circle, rgba(0,255,255,0.4) 1px, transparent 1px)",
               backgroundSize: "4px 4px"
             }}
           />
         </div>
-      </motion.div>
-
-      {/* Communications Interface */}
-      <div className="flex flex-col gap-2 bg-space-black/50 p-3 rounded-lg border border-cyan-500/20 backdrop-blur-sm w-fit">
-        <div className="flex items-center gap-2 text-[10px] text-cyan-400 font-mono mb-1">
-          <Terminal size={10} />
-          <span>INIT_COMMS_PROTOCOL</span>
-          <span className="animate-pulse">{isSpeaking ? '>> TRANSMITTING' : ''}</span>
-        </div>
-        
-        <div className="flex gap-2">
-          <button
-            onClick={() => speak('eng')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-mono text-xs uppercase tracking-wider transition-all ${
-              currentLang === 'eng' 
-                ? 'bg-cyan-500 text-black shadow-[0_0_15px_rgba(0,255,255,0.5)]' 
-                : 'bg-white/5 text-gray-300 hover:bg-cyan-500/20 hover:text-cyan-400 border border-white/10'
-            }`}
-          >
-            {currentLang === 'eng' ? <Volume2 size={12} /> : <VolumeX size={12} />}
-            Eng
-          </button>
-          
-          <button
-            onClick={() => speak('tam')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-mono text-xs uppercase tracking-wider transition-all ${
-              currentLang === 'tam' 
-                ? 'bg-cyan-500 text-black shadow-[0_0_15px_rgba(0,255,255,0.5)]' 
-                : 'bg-white/5 text-gray-300 hover:bg-cyan-500/20 hover:text-cyan-400 border border-white/10'
-            }`}
-          >
-            {currentLang === 'tam' ? <Volume2 size={12} /> : <VolumeX size={12} />}
-            தமிழ்
-          </button>
-        </div>
-      </div>
+      </motion.button>
     </div>
   );
 }
