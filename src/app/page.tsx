@@ -76,13 +76,13 @@ export default function Home() {
           SECURITY
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 w-full z-10 flex flex-col xl:flex-row gap-16 xl:gap-8 items-center justify-between">
           
           <motion.div 
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="flex flex-col gap-6"
+            className="flex flex-col gap-6 w-full xl:w-[55%] shrink-0"
           >
             <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-3 py-1 bg-electric-blue/10 border border-electric-blue rounded-full w-fit text-electric-blue font-bold text-sm uppercase tracking-widest shadow-[0_0_15px_rgba(0,122,255,0.4)]">
               <Terminal size={16} />
@@ -107,7 +107,7 @@ export default function Home() {
               <Typewriter delay={0.5} text="A highly motivated Fresher & Cybersecurity Enthusiast. Eager to secure systems, find vulnerabilities, and build robust web applications." />
             </motion.p>
 
-            <motion.div variants={itemVariants} className="mt-6 mb-2">
+            <motion.div variants={itemVariants} className="mt-6 mb-2 z-50">
               <CyberAvatar />
             </motion.div>
 
@@ -138,7 +138,7 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.5, type: "spring" }}
-            className="w-full relative py-12 lg:py-0 flex flex-col items-center justify-center"
+            className="w-full xl:w-[45%] relative py-12 xl:py-0 flex flex-col items-center justify-center xl:-mt-24 z-0"
           >
             <VictusMockup />
           </motion.div>
