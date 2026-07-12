@@ -85,7 +85,7 @@ export default function CyberAvatar() {
       if (window.speechSynthesis && !isSpeaking && !currentLang) {
         speak('eng', 'tam');
       }
-    }, 1500);
+    }, 6000);
 
     return () => {
       clearTimeout(initSpeech);
@@ -184,6 +184,25 @@ export default function CyberAvatar() {
             transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
             style={{ transform: "translateZ(20px)" }}
           />
+
+          {/* Pulsing Sonar Aura while speaking */}
+          {isSpeaking && (
+            <>
+              <motion.div 
+                className="absolute inset-0 rounded-full border-2 border-cyan-400"
+                animate={{ scale: [1, 1.4], opacity: [0.6, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
+                style={{ transform: "translateZ(15px)" }}
+              />
+              <motion.div 
+                className="absolute inset-0 rounded-full border border-cyan-400"
+                animate={{ scale: [1, 1.5], opacity: [0.4, 0] }}
+                transition={{ duration: 1.5, delay: 0.75, repeat: Infinity, ease: "easeOut" }}
+                style={{ transform: "translateZ(10px)" }}
+              />
+            </>
+          )}
+
           <motion.div 
             className="absolute inset-[-4px] rounded-full border-t-2 border-r-2 border-cyan-400"
             animate={{ rotate: -360 }}
@@ -213,13 +232,6 @@ export default function CyberAvatar() {
                 backgroundImage: "radial-gradient(circle, rgba(0,255,255,0.8) 1px, transparent 1px)",
                 backgroundSize: "4px 4px"
               }}
-            />
-
-            {/* High-Tech Scanning Laser Animation */}
-            <motion.div 
-              className="absolute left-0 right-0 h-[2px] bg-cyan-300/80 shadow-[0_0_15px_rgba(0,255,255,1)] z-40"
-              animate={{ top: ["-10%", "110%", "-10%"] }}
-              transition={{ duration: isSpeaking ? 1.5 : 4, repeat: Infinity, ease: "linear" }}
             />
           </div>
         </motion.button>
