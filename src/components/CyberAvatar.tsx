@@ -131,9 +131,9 @@ export default function CyberAvatar() {
         <div className="relative w-full h-full rounded-full overflow-hidden bg-space-black flex items-center justify-center border-2 border-cyan-500/30">
           {/* We append a timestamp to avatar.jpg to break browser cache just in case */}
           <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat z-10 transition-all duration-300" 
+            className="absolute inset-0 bg-cover bg-[center_top_1rem] md:bg-top bg-no-repeat z-10 transition-all duration-300 scale-110" 
             style={{
-              backgroundImage: "url('/avatar.jpg?t=1')",
+              backgroundImage: "url('/avatar.jpg?t=2')",
               filter: isSpeaking 
                 ? "grayscale(0.3) sepia(0.8) hue-rotate(180deg) saturate(2) brightness(1.2) contrast(1.1) url(#glitch-filter)" 
                 : "grayscale(0.3) sepia(0.8) hue-rotate(180deg) saturate(2) brightness(1.2) contrast(1.1)"
