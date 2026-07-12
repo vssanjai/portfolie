@@ -291,11 +291,11 @@ export default function Home() {
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
             {[
-              { title: "CICSA - Certified IT Infrastructure and Cyber SOC Analyst", issuer: "Cybersecurity" },
+              { title: "CICSA - Certified IT Infrastructure and Cyber SOC Analyst (Ongoing)", issuer: "EC-Council" },
               { title: "SOC Program - Foundations Training", issuer: "Microsoft" },
               { title: "Forage Cybersecurity Job Simulation", issuer: "Mastercard, Deloitte & Tata" },
               { title: "Introduction to the Dark Web, Anonymity, and Cryptocurrency", issuer: "CodeRed" },
-              { title: "Red Team Hacker - Ongoing", issuer: "Cybersecurity" },
+              { title: "CICSA Red Team Hacker - Ongoing", issuer: "EC-Council" },
               { title: "Certified in Data Visualization", issuer: "Tableau" }
             ].map((cert, idx) => (
               <motion.div key={idx} variants={itemVariants} className="h-full">
