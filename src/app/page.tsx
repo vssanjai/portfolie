@@ -98,8 +98,8 @@ export default function Home() {
                 className="text-4xl sm:text-5xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-black italic text-white tracking-tighter leading-[1] whitespace-nowrap"
               >
                 BREAKING SYSTEMS<br />
-                BEFORE HACKERS DO —<br />
-                I'M SANJAY V.S
+                BEFORE HACKERS DO<br />
+                <span className="text-electric-blue">I'M SANJAY V.S</span>
               </h1>
             </motion.div>
             
