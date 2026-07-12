@@ -195,17 +195,16 @@ export default function CyberAvatar() {
             className="relative w-full h-full rounded-full overflow-hidden bg-space-black flex items-center justify-center border-2 border-cyan-500/30"
             style={{ transform: "translateZ(30px)" }}
           >
-            {/* Clear Profile Image without harsh distortion */}
+            {/* Clear Profile Image with pure Cyan Hologram color (No dark shading/glitch) */}
             <div 
               className="absolute inset-0 bg-cover bg-[center_top_1rem] md:bg-top bg-no-repeat z-10 transition-all duration-300 scale-110" 
               style={{
                 backgroundImage: "url('/avatar.jpg?t=3')",
-                filter: isSpeaking ? "brightness(1.1) contrast(1.1)" : "brightness(1.0) contrast(1.0)"
+                filter: isSpeaking 
+                  ? "sepia(1) hue-rotate(180deg) saturate(2.5) brightness(1.2) contrast(1.1)" 
+                  : "sepia(1) hue-rotate(180deg) saturate(1.5) brightness(1.0) contrast(1.0)"
               }}
             />
-            
-            {/* Subtle Cyan Hologram Tint */}
-            <div className={`absolute inset-0 bg-cyan-500/20 mix-blend-overlay z-20 pointer-events-none transition-opacity duration-300 ${isSpeaking ? 'opacity-60' : 'opacity-20'}`} />
             
             {/* Sci-Fi Dot Grid Pattern */}
             <div 
