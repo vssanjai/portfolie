@@ -219,7 +219,7 @@ export default function CyberAvatar() {
             <div 
               className="absolute inset-0 bg-cover bg-[center_top_1rem] md:bg-top bg-no-repeat z-10 transition-all duration-300 scale-110" 
               style={{
-                backgroundImage: "url('/avatar.jpg?t=3')",
+                backgroundImage: `url('${process.env.NODE_ENV === "production" ? "/portfolie" : ""}/avatar.jpg?t=3')`,
                 filter: isSpeaking 
                   ? "sepia(1) hue-rotate(180deg) saturate(2.5) brightness(1.2) contrast(1.1)" 
                   : "sepia(1) hue-rotate(180deg) saturate(1.5) brightness(1.0) contrast(1.0)"
